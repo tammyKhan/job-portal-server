@@ -60,6 +60,8 @@ async function run() {
   // job application apis
   // get all data
 
+
+
   app.get('/job-application', async (req,res) => {
     const email = req.query.email;
     const query = { applicant_email: email }
@@ -80,6 +82,13 @@ async function run() {
     }
 
     res.send(result);
+  })
+
+  app.get('/job-applications/jobs/:job_id', async (req, res) => {
+    const jobId = req.params.job_id;
+    const query = { job_id: jobId }
+    const result = await jobApplicationCollection.find(query).toArray();
+    res.send(result)
   })
   
   app.post('/job-applications', async(req,res) =>{
@@ -108,6 +117,19 @@ async function run() {
     const updatedResult = await jobsCollection.updateOne(filter, updatedDoc)
 
     res.send(result);
+  });
+
+  app.patch('/job-applications/:id', async(req, res) => {
+    const id = req.params.id;
+    const data = req.body;
+    const filter = {_id: new ObjectId(id)};
+    const updatedDoc = {
+      $set: {
+        status: data.status
+      }
+    }
+    const result = await jobApplicationCollection.updateOne(filter, updatedDoc);
+    res.send(result)
   })
 
   } finally {
